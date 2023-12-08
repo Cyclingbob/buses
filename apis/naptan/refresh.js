@@ -1,7 +1,7 @@
 const download = require("./download")
 
 function refresh(file){
-    download(__dirname + "/content.xml").then(() => { console.log('done') }).catch(console.error)
+    return download(file).then(() => { console.log('done') }).catch(console.error)
 }
 
 module.exports = refresh
