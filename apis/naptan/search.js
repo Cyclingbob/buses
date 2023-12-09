@@ -12,14 +12,14 @@ function searchMany(file, query){ //index of type is the index of the specific p
 
         const readStream = fs.createReadStream(file)
         var found = []
-        readStream.on('data', async data => {
-            var lines = data.toString().split('\n')
+        readStream.on('data', async data => { //read Naptan in chunks, it's big
+            var lines = data.toString().split('\n')//it's a CSV file so split by new lines to get each line
             var count = 0
-            while(count != lines.length -1){
+            while(count != lines.length -1){ //for each line
                 let item = lines[count]
 
-                if(split_query.every(part => item.toLowerCase().includes(part.toLowerCase()))){
-                    found.push(item)
+                if(split_query.every(part => item.toLowerCase().includes(part.toLowerCase()))){ //if we find any of the keywords then push it to found list
+                    if(!item.endsWith("inactive")) found.push(item)
                 }
 
                 count++
@@ -27,15 +27,15 @@ function searchMany(file, query){ //index of type is the index of the specific p
         })
         readStream.on('end', () => {
 
-            const filteredItems = found.map(item => {
+            const filteredItems = found.map(item => { //score each result on how many of the keywords it has in order
                 const loweredItem = item.toLowerCase();
-                let score = 0;
+                let score = 0; //first we start with 0
                 let lastIndex = -1;
               
-                for (const part of split_query) {
-                    const index = loweredItem.indexOf(part.toLowerCase(), lastIndex + 1);
-                    if (index > lastIndex) {
-                        score++;
+                for (const part of split_query) { //for each keyword
+                    const index = loweredItem.indexOf(part.toLowerCase(), lastIndex + 1); //find the index of the next keyword
+                    if (index > lastIndex) { //if the next keyword is AFTER the previous
+                        score++; //increase the score (which is how many of keywords it has in order)
                         lastIndex = index;
                     } else {
                         score = 0; // reset score if not found in order, so it appears at bottom
@@ -44,9 +44,8 @@ function searchMany(file, query){ //index of type is the index of the specific p
                 }
               
                 return { item, score };
-              })
-              .sort((a, b) => b.score - a.score); // sort by score in descending order, so that best are at top
-              
+            })
+            .sort((a, b) => b.score - a.score); // sort by score in descending order, so that best are at top
             
             resolve(filteredItems)
         })
