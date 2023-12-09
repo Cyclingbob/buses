@@ -6,6 +6,7 @@ const path = require("path")
 const naptanCSV = path.join(__dirname, "./apis/naptan/content.csv")
 
 const search = require("./apis/naptan/search")
+const fetch_stop = require("./apis/naptan/fetch")
 
 app.use("/public", express.static(path.join(__dirname, "public")))
 app.set('view-engine', 'ejs')
@@ -89,14 +90,15 @@ app.get("/search", async (req, res) => {
             let indicator = split[14]
             let commonName = split[4]
             let town = split[18]
+            let atco_id = split[0]
     
             if(indicator !== ""){
                 return {
                     indicator: fromIndicatorCode(indicator),
-                    commonName, town, type: "stop"
+                    commonName, town, type: "stop", atco_id
                 }
             } else {
-                return { commonName, town, type: "stop" }
+                return { commonName, town, type: "stop", atco_id }
             }
         })
     }
@@ -108,6 +110,23 @@ app.get("/search", async (req, res) => {
         query, results
     })
     
+})
+
+app.get("/stop/:atco", async (req, res) => {
+    var atco = req.params.atco
+    var found = await fetch_stop(naptanCSV, atco)
+    found = found.split(',')
+
+    let indicator = found[14]
+    let commonName = found[4]
+    let town = found[18]
+    let atco_id = found[0]
+
+    if(found) res.render(path.join(__dirname, "views", "stop.ejs"), {
+        stop: {
+            indicator: fromIndicatorCode(indicator), commonName, town, atco_id
+        }
+    })
 })
 
 app.listen(config.port)
