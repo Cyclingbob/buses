@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Results: <%= query %></title>
+        <link rel="stylesheet" href="/public/base.css">
         <link rel="stylesheet" href="/public/search.css">
     </head>
     <body>
@@ -28,23 +29,23 @@
             <div class="results">
                 <ul>
                     <% results.forEach(result => { %>
-                        <li>
-                            <div class="type-icon">
-                                <% if (result.type === "stop") { %>
+                        <% if (result.type === "stop") { %>
+                            <li onclick="window.location='/stop/<%= result.atco_id %>'">
+                                <div class="type-icon">
                                     <img src="/public/busstopicon2.png">
-                                <% } else { %>
+                                </div>
+                                <div class="text">
+                                    <% if (result.indicator) { %>
+                                        <h3><%= result.indicator %> <%= result.commonName %></h3>
+                                    <% } else { %>
+                                        <h3><%= result.commonName %></h3>
+                                    <% } %>
+                                    <p><%= result.town %></p>
+                                </div>
+                            </li>
+                        <% } else { %>
                                     
-                                <% } %>
-                            </div>
-                            <div class="text">
-                                <% if (result.indicator) { %>
-                                    <h3><%= result.indicator %> <%= result.commonName %></h3>
-                                <% } else { %>
-                                    <h3><%= result.commonName %></h3>
-                                <% } %>
-                                <p><%= result.town %></p>
-                            </div>
-                        </li>
+                        <% } %>
                     <% }); %>
                 </ul>
             </div>

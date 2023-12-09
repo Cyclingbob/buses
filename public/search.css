@@ -1,31 +1,3 @@
-header {
-    width: 100%;
-    background-color: rgb(141, 252, 141);
-    display: flex;
-}
-header div {
-    width: 900px;
-    margin: 0 auto;
-    display: inline-block;
-}
-header div ul {
-    display: flex;
-    list-style-type: none;
-    padding: 0
-}
-header div ul li a {
-    padding: 10px;
-    text-decoration: none;
-    font-size: 20px;
-    color: black
-}
-body {
-    margin: 0
-}
-.content {
-    width: 900px;
-    margin: 0 auto;   
-}
 .content #search-form input[type="text"] {
     width: calc(100% - 100px);
     padding: 10px;
@@ -47,6 +19,9 @@ body {
     display: flex;
     margin: 10px;
     width: 400px;
+}
+.content .results ul li:hover {
+    cursor: pointer;
 }
 .content .results ul li .type-icon {
     width: 60px;
