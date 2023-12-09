@@ -21,3 +21,47 @@ header div ul li a {
 body {
     margin: 0
 }
+.content {
+    width: 900px;
+    margin: 0 auto;   
+}
+.content #search-form input[type="text"] {
+    width: calc(100% - 100px);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 18px;
+    outline: none;
+    border: 1px solid black;
+}
+.content .results {
+    padding: 10px;
+}
+.content .results ul {
+    list-style-type: none;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0
+}
+.content .results ul li {
+    display: flex;
+    margin: 10px;
+    width: 400px;
+}
+.content .results ul li .type-icon {
+    width: 60px;
+    border: 1px solid black;
+    border-radius: 8px;
+    padding: 5px;
+    height: 55px;
+}
+.content .results ul li .type-icon img {
+    width: 50px;
+    margin: 0 auto;
+    display: block
+}
+.content .results ul li .text h3 {
+    margin: 5px 0 0 5px;
+}
+.content .results ul li .text p {
+    margin: 5px;
+}

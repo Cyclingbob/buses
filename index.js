@@ -91,9 +91,12 @@ app.get("/search", async (req, res) => {
             let town = split[18]
     
             if(indicator !== ""){
-                return `${fromIndicatorCode(indicator)} ${commonName} (${town})`
+                return {
+                    indicator: fromIndicatorCode(indicator),
+                    commonName, town, type: "stop"
+                }
             } else {
-                return `${commonName} in ${town}`
+                return { commonName, town, type: "stop" }
             }
         })
     }
