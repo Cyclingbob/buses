@@ -1,7 +1,15 @@
 const fs = require("fs")
 
+function sortMostRelevantFirst(query, items){
+
+}
+
+
 function searchMany(file, query){ //index of type is the index of the specific property to search by, such as Naptan code which would be 1
     return new Promise((resolve, reject) => {
+
+        const split_query = query.split(' ')
+
         const readStream = fs.createReadStream(file)
         var found = []
         readStream.on('data', async data => {
@@ -10,11 +18,7 @@ function searchMany(file, query){ //index of type is the index of the specific p
             while(count != lines.length -1){
                 let item = lines[count]
 
-                // if(item.includes(query)){
-                //     found.push(item)
-                // }
-
-                if(query.split(' ').every(part => item.toLowerCase().includes(part.toLowerCase()))){
+                if(split_query.every(part => item.toLowerCase().includes(part.toLowerCase()))){
                     found.push(item)
                 }
 
@@ -22,7 +26,29 @@ function searchMany(file, query){ //index of type is the index of the specific p
             }
         })
         readStream.on('end', () => {
-            resolve(found)
+
+            const filteredItems = found.map(item => {
+                const loweredItem = item.toLowerCase();
+                let score = 0;
+                let lastIndex = -1;
+              
+                for (const part of split_query) {
+                    const index = loweredItem.indexOf(part.toLowerCase(), lastIndex + 1);
+                    if (index > lastIndex) {
+                        score++;
+                        lastIndex = index;
+                    } else {
+                        score = 0; // reset score if not found in order, so it appears at bottom
+                        break;
+                    }
+                }
+              
+                return { item, score };
+              })
+              .sort((a, b) => b.score - a.score); // sort by score in descending order, so that best are at top
+              
+            
+            resolve(filteredItems)
         })
     })
 }
