@@ -11,6 +11,7 @@ header div {
 header div ul {
     display: flex;
     list-style-type: none;
+    padding: 0
 }
 header div ul li a {
     padding: 10px;
