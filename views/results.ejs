@@ -5,28 +5,32 @@
     </head>
     <body>
         <header>
-            <ul>
-                <li>
-                    <a href="/">Home</a>
-                </li>
-                <li>
-                    <a href="/search">Search</a>
-                </li>
-                <li>
-                    <a href="/map">Map</a>
-                </li>
-            </ul>
+            <div>
+                <ul>
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    <li>
+                        <a href="/search">Search</a>
+                    </li>
+                    <li>
+                        <a href="/map">Map</a>
+                    </li>
+                </ul>
+            </div>
         </header>
-        <h1>Results for <%= query %></h1>
-        <form id="search-form">
-            <input name="q" value="<%= query %>">
-            <input type="submit">
-        </form>
-        <ul>
-            <% results.forEach(result => { %>
-                <li><%= result %></li>
-            <% }); %>
-        </ul>
+        <div class="content">
+            <h1>Results for <%= query %></h1>
+            <form id="search-form">
+                <input name="q" value="<%= query %>">
+                <input type="submit">
+            </form>
+            <ul>
+                <% results.forEach(result => { %>
+                    <li><%= result %></li>
+                <% }); %>
+            </ul>
+        </div>
         <script defer src="/public/search.ejs"></script>
     </body>
 </html>

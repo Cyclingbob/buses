@@ -1,7 +1,23 @@
 header {
     width: 100%;
+    background-color: rgb(141, 252, 141);
+    display: flex;
 }
-header ul {
+header div {
+    width: 900px;
+    margin: 0 auto;
+    display: inline-block;
+}
+header div ul {
     display: flex;
     list-style-type: none;
+}
+header div ul li a {
+    padding: 10px;
+    text-decoration: none;
+    font-size: 20px;
+    color: black
+}
+body {
+    margin: 0
 }
