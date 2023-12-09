@@ -7,7 +7,7 @@ const naptanCSV = path.join(__dirname, "./apis/naptan/content.csv")
 
 const search = require("./apis/naptan/search")
 
-app.use("/express", express.static(path.join(__dirname, "public")))
+app.use("/public", express.static(path.join(__dirname, "public")))
 app.set('view-engine', 'ejs')
 
 function fromArrow(heading){
