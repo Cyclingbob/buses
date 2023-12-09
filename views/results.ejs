@@ -1,8 +1,22 @@
 <html>
     <head>
         <title>Results: <%= query %></title>
+        <link rel="stylesheet" href="/public/search.css">
     </head>
     <body>
+        <header>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                <li>
+                    <a href="/search">Search</a>
+                </li>
+                <li>
+                    <a href="/map">Map</a>
+                </li>
+            </ul>
+        </header>
         <h1>Results for <%= query %></h1>
         <form id="search-form">
             <input name="q" value="<%= query %>">
