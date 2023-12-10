@@ -79,6 +79,56 @@ function fromIndicatorCode(code){
     return capitalised + ", "
 }
 
+function decodeStop(string){
+    let s = string.split(',')
+    return {
+        atco_id: s[0],
+        naptan_code: s[1],
+        plate_code: s[2],
+        cleardown_code: s[3],
+        common_name: s[4],
+        common_name_lang: s[5],
+        short_common_name: s[6],
+        short_common_name_lang: s[7],
+        landmark: s[8],
+        landmark_lang: s[9],
+        street: s[10],
+        street_lang: s[11],
+        crossing: s[12],
+        crossing_lang: s[13],
+        indicator: s[14],
+        rendered_indicator: fromIndicatorCode(s[14]),
+        indicator_lang: s[15],
+        bearing: s[16],
+        Nptg_locality_code: s[17],
+        locality_name: s[18],
+        parent_locality_name: s[19],
+        grand_parent_locality_name: s[20],
+        town: s[21],
+        town_lang: s[22],
+        suburb: s[23],
+        suburb_lang: s[24],
+        locality_centre: s[25],
+        grid_type: s[26],
+        easting: s[27],
+        northing: s[28],
+        longitude: s[29],
+        latitude: s[30],
+        stop_type: s[31],
+        bus_stop_type: s[32],
+        timing_status: s[33],
+        default_wait_time: s[34],
+        notes: s[35],
+        notes_lang: s[36],
+        administrative_area_code: s[37],
+        created: s[38],
+        modified: s[39],
+        revision_number: s[40],
+        modification: s[41],
+        status: s[42]
+    }
+}
+
 app.get("/search", async (req, res) => {
     if(req.query.q){
         var query = decodeURIComponent(req.query.q)
@@ -121,6 +171,8 @@ app.get("/stop/:atco", async (req, res) => {
     let commonName = found[4]
     let town = found[18]
     let atco_id = found[0]
+    
+    console.log(decodeStop(await fetch_stop(naptanCSV, atco)))
 
     if(found) res.render(path.join(__dirname, "views", "stop.ejs"), {
         stop: {
