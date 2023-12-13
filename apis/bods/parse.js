@@ -98,12 +98,84 @@ async function parseTimetable(file){
         }
     })
 
-    let timetable = {
+    let services = xml.Services[0].Service.map(service => {
+        return {
+            created: service["$"].CreationDateTime,
+            modified: service["$"].ModificationDateTime,
+            modification: service["$"].Modification,
+            revision_number: service["$"].RevisionNumber,
+            service_code: service.ServiceCode[0],
+            private_code: service.PrivateCode[0],
+            lines: service.Lines[0].Line.map(line => {
+
+                var inboundVias = line.InboundDescription[0].Vias
+
+                if(inboundVias) inboundVias = inboundVias.map(via => {
+                    return via.Via[0]
+                })
+                else inboundVias = []
+
+                var outboundVias = line.OutboundDescription[0].Vias
+                if(outboundVias) outboundVias = outboundVias.map(via => {
+                    return via.Via[0]
+                })
+                else outboundVias = []
+
+                return {
+                    id: line["$"].id,
+                    inbound_description: {
+                        description: line.InboundDescription[0].Description[0],
+                        destination: line.InboundDescription[0].Destination[0],
+                        origin: line.InboundDescription[0].Origin[0],
+                        vias: inboundVias
+                    },
+                    line_name: line.LineName,
+                    outbound_description: {
+                        description: line.OutboundDescription[0].Description[0],
+                        destination: line.OutboundDescription[0].Destination[0],
+                        origin: line.OutboundDescription[0].Origin[0],
+                        vias: outboundVias
+                    },
+                }
+            }),
+            operating_period: service.OperatingPeriod[0],
+            registered_operator_ref: service.RegisteredOperatorRef[0],
+            public_use: service.PublicUse[0],
+            standard_service: {
+                origin: service.StandardService[0].Origin[0],
+                destination: service.StandardService[0].Destination[0],
+                vias: service.StandardService[0].Vias.map(via => {
+                    return via.Via[0]
+                }),
+                use_all_stop_points: service.StandardService[0].UseAllStopPoints[0],
+                journey_pattern: service.StandardService[0].JourneyPattern.map(pattern => {
+                    return {
+                        id: pattern["$"].id,
+                        created: pattern["$"].CreationDateTime,
+                        modified: pattern["$"].ModificationDateTime,
+                        modification: pattern["$"].Modification,
+                        revision_number: pattern["$"].RevisionNumber,
+                        destination_display: pattern.DestinationDisplay[0],
+                        operator_ref: pattern.OperatorRef[0],
+                        direction: pattern.Direction[0],
+                        route_ref: pattern.RouteRef[0],
+                        journey_pattern_section_refs: pattern.JourneyPatternSectionRefs
+                    }
+                })
+            }
+        }
+    })
+
+    let vehicle_journeys = xml.VehicleJourneys[0].VehicleJourney
+
+    let timetable = { //missing operators
         servicedOrganisations,
         stopPoints,
         routeSections,
         routes,
-        journey_pattern_sections
+        journey_pattern_sections,
+        services,
+        vehicle_journeys
     }
     return timetable
 }

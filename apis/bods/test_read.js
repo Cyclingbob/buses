@@ -4,5 +4,5 @@ var timetable = path.join(__dirname, "./timetables/25_825-FEAO025_FEAO825--FESX-
 
 const parse = require("./parse")
 parse(timetable).then(timetable => {
-    console.log(timetable.journey_pattern_sections[0].timing_links[0])
+    console.log(timetable.vehicle_journeys[0])
 })

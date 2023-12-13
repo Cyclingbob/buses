@@ -53,6 +53,17 @@ function download(set_id, key){
     })
 }
 
+function listSets(key){
+    fetch(`https://data.bus-data.dft.gov.uk/api/v1/dataset/?api_key=${key}&noc=FESX&search=Essex`).then(res => res.json()).then(parsed => {
+        console.log(parsed)
+    })
+}
+
+function downloadOne(set_id, folder){
+    var url = "https://data.bus-data.dft.gov.uk/timetable/dataset/" + set_id + "/download/"
+    downloadAndUnzip(url, folder)
+}
+
 // download("", process.env.api_key)
 
 
@@ -87,4 +98,4 @@ function read(file){
     })
 }
 
-module.exports = { download, read }
+module.exports = { download, read , listSets, downloadOne }
