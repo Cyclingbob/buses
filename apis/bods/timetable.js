@@ -60,21 +60,30 @@ function read(file){
     var contents = fs.readFileSync(file, "utf-8")
     xml2js.parseStringPromise(contents).then(parsed => {
         parsed = parsed.TransXChange
-        var days_working = parsed.ServicedOrganisations[0].ServicedOrganisation[0].WorkingDays[0].DateRange
-        var stop_points = parsed.StopPoints[0].AnnotatedStopPointRef
-        var route_sections = parsed.RouteSections[0].RouteSection
-        var a_route_section = route_sections[0].RouteLink
+
+        var journey_sections = parsed.JourneyPatternSections[0].JourneyPatternSection
+        var a_journey_section = journey_sections[0]
+        var id = a_journey_section["$"].id
+        var a_timing_link = a_journey_section.JourneyPatternTimingLink[0]
+
+        console.log(a_timing_link.From[0])
+        // var days_working = parsed.ServicedOrganisations[0].ServicedOrganisation[0].WorkingDays[0].DateRange
+        // console.log(days_working)
         
-        var routes = parsed.Routes[0].Route
-        var a_route = routes[8]
+        // var stop_points = parsed.StopPoints[0].AnnotatedStopPointRef
+        // var route_sections = parsed.RouteSections[0].RouteSection
+        // var a_route_section = route_sections[0].RouteLink
+        
+        // var routes = parsed.Routes[0].Route
+        // var a_route = routes[8]
 
-        var operators = parsed.Operators[0].Operator
-        var garages = operators[0].Garages[0].Garages
+        // var operators = parsed.Operators[0].Operator
+        // var garages = operators[0].Garages[0].Garages
 
-        var services = parsed.Services[0].Service[0].StandardService[0].JourneyPattern[0]
+        // var services = parsed.Services[0].Service[0].StandardService[0].JourneyPattern[0]
 
-        var vehicle_journeys = parsed.VehicleJourneys[0].VehicleJourney //the timetables
-        console.log(vehicle_journeys)
+        // var vehicle_journeys = parsed.VehicleJourneys[0].VehicleJourney //the timetables
+        // console.log(vehicle_journeys)
     })
 }
 

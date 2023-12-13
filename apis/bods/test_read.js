@@ -1,4 +1,8 @@
 const path = require("path")
-const timetable = require("./timetable")
+// const timetable = require("./timetable")
+var timetable = path.join(__dirname, "./timetables/25_825-FEAO025_FEAO825--FESX-Basildon-2023-10-29-For_Reports-BODS_V1_1.xml")
 
-timetable.read(path.join(__dirname, "./timetables/25_825-FEAO025_FEAO825--FESX-Basildon-2023-10-29-For_Reports-BODS_V1_1.xml"))
+const parse = require("./parse")
+parse(timetable).then(timetable => {
+    console.log(timetable.journey_pattern_sections[0].timing_links[0])
+})
