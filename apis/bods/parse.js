@@ -166,7 +166,27 @@ async function parseTimetable(file){
         }
     })
 
-    let vehicle_journeys = xml.VehicleJourneys[0].VehicleJourney
+    let vehicle_journeys = xml.VehicleJourneys[0].VehicleJourney.map(journey => {
+        return {
+            created: journey["$"].CreationDateTime,
+            modified: journey["$"].ModificationDateTime,
+            modification: journey["$"].Modification,
+            revision_number: journey["$"].RevisionNumber,
+            sequence_number: journey["$"].SequenceNumber,
+            private_code: journey.PrivateCode[0],
+            operator_ref: journey.OperatorRef[0],
+            operational: {
+                block: journey.Operational[0].Block,
+                ticket_machine: journey.Operational[0].TicketMachine,
+            },
+            operating_profile: {
+                regular_day_type: journey.OperatingProfile[0].RegularDayType,
+                bank_holiday_operation: journey.OperatingProfile[0].BankHolidayOperation,
+            },
+            garage_ref: journey.GarageRef[0],
+            vehicle_journey_code: journey.VehicleJourneyCode[0]
+        }
+    })
 
     let timetable = { //missing operators
         servicedOrganisations,
