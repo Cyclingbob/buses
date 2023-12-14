@@ -166,7 +166,50 @@ async function parseTimetable(file){
         }
     })
 
-    let vehicle_journeys = xml.VehicleJourneys[0].VehicleJourney.map(journey => {
+    function renderDayObject(daysOfOperation){
+        var arr = []
+        for(day in daysOfOperation){
+            arr.push(day)
+        }
+        return arr
+    }
+
+    let vehicle_journeys = xml.VehicleJourneys[0].VehicleJourney.map(journey => {        
+        if(journey.StartDeadRun){
+        
+            var from = journey.StartDeadRun[0].PositioningLink[0].From[0]
+            if(from.GarageRef){
+                from = { type: "garage_ref", id: from.GarageRef[0] }
+            } else if(from.StopPointRef){
+                from = { type: "stop_point_ref", id: from.StopPointRef[0] }
+            }
+
+            var to = journey.StartDeadRun[0].PositioningLink[0].To[0]
+            if(to.GarageRef){
+                to = { type: "garage_ref", id: to.GarageRef[0] }
+            } else if(to.StopPointRef){
+                to = { type: "stop_point_ref", id: to.StopPointRef[0] }
+            }
+
+
+            var start_dead_run = {
+                id: journey.StartDeadRun[0]["$"].id,
+                positioning_link: {
+                    id: journey.StartDeadRun[0].PositioningLink[0]["$"].id,
+                    run_time: journey.StartDeadRun[0].PositioningLink[0].RunTime[0],
+                    from, to
+                }
+            }
+        } else var start_dead_run = null
+
+        if(journey.OperatingProfile[0].BankHolidayOperation[0].DaysOfOperation){
+            var runs_on = renderDayObject(journey.OperatingProfile[0].BankHolidayOperation[0].DaysOfOperation[0])
+        } else var runs_on = []
+
+        if(journey.OperatingProfile[0].BankHolidayOperation[0].DaysOfOperation){
+            var does_not_run_on = renderDayObject(journey.OperatingProfile[0].BankHolidayOperation[0].DaysOfNonOperation[0])
+        } else var does_not_run_on = []
+        
         return {
             created: journey["$"].CreationDateTime,
             modified: journey["$"].ModificationDateTime,
@@ -176,15 +219,29 @@ async function parseTimetable(file){
             private_code: journey.PrivateCode[0],
             operator_ref: journey.OperatorRef[0],
             operational: {
-                block: journey.Operational[0].Block,
-                ticket_machine: journey.Operational[0].TicketMachine,
+                block: {
+                    description: journey.Operational[0].Block[0].Description[0],
+                    block_number: journey.Operational[0].Block[0].BlockNumber[0]
+                },
+                ticket_machine: {
+                    tm_service_code: journey.Operational[0].TicketMachine[0].TicketMachineServiceCode[0],
+                    service_code: journey.Operational[0].TicketMachine[0].JourneyCode[0]
+                },
             },
             operating_profile: {
-                regular_day_type: journey.OperatingProfile[0].RegularDayType,
-                bank_holiday_operation: journey.OperatingProfile[0].BankHolidayOperation,
+                regular_days: renderDayObject(journey.OperatingProfile[0].RegularDayType[0].DaysOfWeek[0]),
+                bank_holiday_operation: {
+                    runs_on, does_not_run_on
+                }
             },
             garage_ref: journey.GarageRef[0],
-            vehicle_journey_code: journey.VehicleJourneyCode[0]
+            vehicle_journey_code: journey.VehicleJourneyCode[0],
+            service_ref: journey.ServiceRef[0],
+            line_ref: journey.LineRef[0],
+            journey_pattern_ref: journey.JourneyPatternRef[0],
+            start_dead_run,
+            departure_time: journey.DepartureTime[0],
+            vehicle_journey_timing_link: journey.VehicleJourneyTimingLink
         }
     })
 
@@ -195,7 +252,8 @@ async function parseTimetable(file){
         routes,
         journey_pattern_sections,
         services,
-        vehicle_journeys
+        vehicle_journeys,
+        v:  xml.VehicleJourneys[0].VehicleJourney
     }
     return timetable
 }
