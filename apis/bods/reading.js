@@ -1,7 +1,7 @@
 const xml2js = require("xml2js")
 const fs = require("fs")
 
-async function convertToJSON(xmlFile, jsonFile){
+async function readXML(xmlFile){
     let contents = fs.readFileSync(xmlFile, "utf-8")
     let xml = await xml2js.parseStringPromise(contents)
     
@@ -267,9 +267,14 @@ async function convertToJSON(xmlFile, jsonFile){
         services,
         vehicle_journeys
     }
-    
-    fs.writeFileSync(jsonFile, JSON.stringify(timetable), "utf-8")
+
     return timetable
 }
 
-module.exports = convertToJSON
+async function convertToJSON(xmlFile, jsonFile){    
+    var parsed = await readXML(xmlFile)
+    fs.writeFileSync(jsonFile, JSON.stringify(parsed), "utf-8")
+    return true
+}
+
+module.exports = { convertToJSON, readXML }
