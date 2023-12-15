@@ -1,8 +1,8 @@
 const xml2js = require("xml2js")
 const fs = require("fs")
 
-async function parseTimetable(file){
-    let contents = fs.readFileSync(file, "utf-8")
+async function convertToJSON(xmlFile, jsonFile){
+    let contents = fs.readFileSync(xmlFile, "utf-8")
     let xml = await xml2js.parseStringPromise(contents)
     
     if(!xml.TransXChange) throw new Error("No TransXChange property in XML file: Bad XML timetable file provided: " + file)
@@ -129,7 +129,7 @@ async function parseTimetable(file){
                         origin: line.InboundDescription[0].Origin[0],
                         vias: inboundVias
                     },
-                    line_name: line.LineName,
+                    line_name: line.LineName[0],
                     outbound_description: {
                         description: line.OutboundDescription[0].Description[0],
                         destination: line.OutboundDescription[0].Destination[0],
@@ -241,7 +241,20 @@ async function parseTimetable(file){
             journey_pattern_ref: journey.JourneyPatternRef[0],
             start_dead_run,
             departure_time: journey.DepartureTime[0],
-            vehicle_journey_timing_link: journey.VehicleJourneyTimingLink
+            vehicle_journey_timing_link: journey.VehicleJourneyTimingLink.map(timing_link => {
+                
+                if(timing_link.DutyCrewCode) var duty_crew_code = timing_link.DutyCrewCode[0]
+                else var duty_crew_code = null
+
+                return {
+                    id: timing_link["$"].id,
+                    duty_crew_code,
+                    journey_pattern_timing_link_ref: timing_link.JourneyPatternTimingLinkRef[0],
+                    run_time: timing_link.RunTime[0],
+                    from: timing_link.From[0].Activity[0],
+                    to: timing_link.To[0].Activity[0]
+                }
+            })
         }
     })
 
@@ -252,10 +265,11 @@ async function parseTimetable(file){
         routes,
         journey_pattern_sections,
         services,
-        vehicle_journeys,
-        v:  xml.VehicleJourneys[0].VehicleJourney
+        vehicle_journeys
     }
+    
+    fs.writeFileSync(jsonFile, JSON.stringify(timetable), "utf-8")
     return timetable
 }
 
-module.exports = parseTimetable
+module.exports = convertToJSON
