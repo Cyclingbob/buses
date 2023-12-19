@@ -30,7 +30,8 @@ function parse(content){
     var plots = getAllPlots(route_sections)
     
     return {
-        plots
+        plots,
+        services: content.services
     }
 }
 
