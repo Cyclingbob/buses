@@ -20,10 +20,15 @@ var parsed = parse(content)
 app.get('/route', (req, res) => {
     
     var route_section = req.query.route
-    console.log(req.query)
     res.json({
         plots: parsed.plots[route_section]
     })
+})
+
+console.log(parsed.services[0].standard_service.journey_pattern[0])
+
+app.get('/service', (req, res) => {
+    
 })
 
 app.listen(80)
