@@ -2,7 +2,6 @@ const fetch = require("node-fetch")
 const AdmZip = require("adm-zip");
 const fs = require("fs")
 const path = require("path")
-const xml2js = require("xml2js")
 
 async function downloadAndUnzip(url, dir){
     try {
@@ -53,10 +52,8 @@ function download(set_id, key){
     })
 }
 
-function listSets(key){
-    fetch(`https://data.bus-data.dft.gov.uk/api/v1/dataset/?api_key=${key}&noc=FESX&search=Essex`).then(res => res.json()).then(parsed => {
-        console.log(parsed)
-    })
+function listSets(key, noc, search){
+    return fetch(`https://data.bus-data.dft.gov.uk/api/v1/dataset/?api_key=${key}&noc=${noc}&search=${search}`).then(res => res.json())
 }
 
 function downloadOne(set_id, folder){
