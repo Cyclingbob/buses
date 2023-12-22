@@ -43,20 +43,18 @@ function parse(jsonFile){
     var services = []
 
     for(service of content.services){
-
-        let newService = {}
-        for(line of service.lines){
+        service.lines = service.lines.map(line => {
             var vehicle_journeys = content.vehicle_journeys.filter(a => a.line_ref === line.id)
-            
-            for(vehicle_journey of vehicle_journeys){
+
+            vehicle_journeys = vehicle_journeys.map(vehicle_journey => {
                 let timing_links = vehicle_journey.vehicle_journey_timing_link
 
                 let journey_timing_links = timing_links.map(a => {
 
                     var timing_link_ref = a.journey_pattern_timing_link_ref
-                    var timing_link = searchJourneyPatternArray(services.journey_pattern_sections, timing_link_ref)
+                    var timing_link = searchJourneyPatternArray(content.journey_pattern_sections, timing_link_ref)
                     var route_link_ref = timing_link.route_link_ref
-                    var routeLink = searchForRouteLinks(services.routeSections, route_link_ref)
+                    var routeLink = searchForRouteLinks(content.routeSections, route_link_ref)
                     timing_link.route_link = routeLink
             
                     return {
@@ -65,12 +63,18 @@ function parse(jsonFile){
                     }
                 })
 
-            }
-        }
+                vehicle_journey.journey_timing_links = journey_timing_links
+                return vehicle_journey
+            })
+
+            line.vehicle_journeys = vehicle_journeys
+            return line
+        })
+
+        services.push(service)
     }
 
-    return services
-
+    return { services, content }
 }
 
 module.exports = parse
