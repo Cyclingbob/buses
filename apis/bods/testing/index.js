@@ -15,32 +15,35 @@ var countSeconds = parseInt(depSeconds)
 var stops = []
 
 function addTime(hour1, minute1, second1, hour2, minute2, second2){
-    var hours = hour1 + hour2
-    var minutes = minute1 + minute2
-    var seconds = second1 + second2
 
-    if(seconds >= 60){
-        minutes += Math.floor(seconds / 60)
-        seconds %= 60
+    var d = new Date()
+    d.setHours(hour1 + hour2)
+    d.setMinutes(minute1 + minute2)
+    d.setSeconds(second1 + second2)
+
+    return {
+        hours: d.getHours(),
+        minutes: d.getMinutes(),
+        seconds: d.getSeconds()
     }
-
-    if(minutes >= 60){
-        hours += Math.floor(minutes / 60)
-        minutes %= 60
-    }
-
-    return { hours, minutes, seconds }
 }
 
 first825journey.journey_timing_links.forEach((link, i) => {
+    // console.log(content.content.stopPoints.find(a => a.atco_code === link.timing_link.route_link.from_atco_code))
     if(i == 0){
-        stops.push({ time: depHour + ":" + depMins, atco_code: link.timing_link.route_link.from_atco_code })
-    } else { //last item
-
-        let newTime = addTime(countHour, countHour, countSeconds, 0, link.time.minutes, link.time.seconds)
-
-        stops.push({ time: newTime, atco_code: link.timing_link.route_link.to_atco_code })
+        stops.push({ time: { hours: countHour, minutes: countMins, seconds: countSeconds }, atco_code: link.timing_link.route_link.from_atco_code })
     }
+
+    let newTime = addTime(countHour, countMins, countSeconds, 0, link.time.minutes, link.time.seconds)
+
+    // console.log(countHour, countMins, countSeconds, newTime.hours, newTime.minutes, newTime.seconds, link.time.minutes, link.time.seconds)
+    
+    countHour = newTime.hours
+    countMins = newTime.minutes
+    countSeconds = newTime.seconds
+
+    stops.push({ time: newTime, atco_code: link.timing_link.route_link.to_atco_code })
+    
 })
 
 stops = stops.map(stop => {
