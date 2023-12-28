@@ -33,27 +33,28 @@ async function downloadAndUnzipAll(urls, dir){
 }
 
 
-function download(key, dir, noc){
-    return fetch(`https://data.bus-data.dft.gov.uk/api/v1/dataset?api_key=${key}&noc=${noc}`).then(res => res.json()).then(async parsed => {
-        var items = []
-        items = items.concat(parsed.results)
-
-        let nextPageUrl = parsed.next
-        while(nextPageUrl){
-            try {
-                var data2 = await fetch(nextPageUrl).then(res => res.json())
-                items = items.concat(data2.results)
-
-                nextPageUrl = data2.next
-            } catch(error){
-                console.error(error)
-                break;
+function downloadMany(key, dir, noc){
+    return new Promise((resolve, reject) => {
+        fetch(`https://data.bus-data.dft.gov.uk/api/v1/dataset?api_key=${key}&noc=${noc}`).then(res => res.json()).then(async parsed => {
+            var items = []
+            items = items.concat(parsed.results)
+    
+            let nextPageUrl = parsed.next
+            while(nextPageUrl){
+                try {
+                    var data2 = await fetch(nextPageUrl).then(res => res.json())
+                    items = items.concat(data2.results)
+    
+                    nextPageUrl = data2.next
+                } catch(error){
+                    console.error(error)
+                    break;
+                }
             }
-        }
-
-        var urls = items.map(item => item.url)
-        downloadAndUnzipAll(urls, dir)
-        return true
+    
+            var urls = items.map(item => item.url)
+            downloadAndUnzipAll(urls, dir).then(resolve)
+        })
     })
 }
 
@@ -96,9 +97,9 @@ function listSets(key, noc, search){
     })
 }
 
-function downloadOne(set_id, folder){
+function downloadOne(set_id, dir){
     var url = "https://data.bus-data.dft.gov.uk/timetable/dataset/" + set_id + "/download/"
-    return downloadAndUnzip(url, folder)
+    return downloadAndUnzip(url, dir)
 }
 
-module.exports = { download , listSets, downloadOne }
+module.exports = { downloadMany , listSets, downloadOne }
