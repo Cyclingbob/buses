@@ -1,5 +1,6 @@
 apis/naptan/content.csv
 apis/naptan/content.xml
-apis/bods/example_timetables
+example_timetables
 .env
 apis/bods/testing
+example_timetables_json
