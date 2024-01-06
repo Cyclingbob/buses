@@ -1,0 +1,22 @@
+The TransXChange element contains a group element comprises the following child elements:
+ ServicedOrganisations: A collection of ServicedOrganisation elements. See later.
+ NptgLocalities: A collection of references to NPTG localities used in local stop definitions in
+the schedule. See later.
+ StopPoints: A collection of the NaPTAN stop points used in the schedule. See later.
+ StopAreas: A collection of reusable StopArea instances declared locally to group any stop
+points declared locally. See later.
+ RouteSections: A collection of reusable RouteSection elements for defining routes. See
+later.
+ Routes: A collection of reusable Route elements for use in journey patterns. See later.
+ JourneyPatternSections: A collection of reusable JourneyPatternSection elements for
+defining journey patterns. See later.
+ Operators: A collection of Operator elements. See later.
+ Services: A collection of Service elements. See later.
+ VehicleJourneys: A collection of VehicleJourney elements. See later.
+ Registrations: A collection of Registration elements, each referencing a Service element.
+See later.
+o In the TransXChange Registration Schema, there must be one Registration.
+o In the TransXChange General Schema documents, there may be zero, one or
+many Registration instances.
+ SupportingDocuments: A collection of reusable SupportingDocument elements. See
+later

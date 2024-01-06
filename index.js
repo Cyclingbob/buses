@@ -3,6 +3,8 @@ const express = require("express")
 const app = express()
 
 const path = require("path")
+const fs = require("fs")
+
 const naptanCSV = path.join(__dirname, "./apis/naptan/content.csv")
 
 const search = require("./apis/naptan/search")
@@ -10,6 +12,11 @@ const fetch_stop = require("./apis/naptan/fetch")
 
 app.use("/public", express.static(path.join(__dirname, "public")))
 app.set('view-engine', 'ejs')
+
+var cache = {
+    stops: {},
+    lines: {}
+}
 
 function fromArrow(heading){
     heading = heading.replace('->', '')
@@ -129,9 +136,53 @@ function decodeStop(string){
     }
 }
 
+const timetable_dir = path.join(__dirname, "example_timetables_json")
+
+const parseTimetable = require("./apis/bods/timetables/parseTimetable")
+
+function getLines(dir){
+    let lines = []
+    let files = fs.readdirSync(dir)
+    for(file of files){
+        let content = parseTimetable(path.join(dir, file))
+        lines.push(content)
+    }
+    return lines
+}
+
+var lines = getLines(timetable_dir)
+lines = lines.map(parseTimetable)
+cache.lines = lines
+
+function fetch_line(string){
+    var split_query = string.split(' ')
+    var found = []
+    for(line of cache.lines){
+        console.log(line)
+        for(service of line.services){
+            for(serviceLine of service.lines){
+                let line = {
+                    name: serviceLine.line_name,
+                    id: serviceLine.id,
+                    description: serviceLine.inbound_description.description
+                }
+                // console.log(line)
+                // found.push(line)
+            }
+        }
+
+        // if(split_query.every(part => line.toLowerCase().includes(part.toLowerCase()))){ //if we find any of the keywords then push it to found list
+        //     if(!item.endsWith("inactive")) found.push(item)
+        //     results.push()
+        //     continue;
+        // }
+    }
+}
+
 app.get("/search", async (req, res) => {
     if(req.query.q){
         var query = decodeURIComponent(req.query.q)
+        fetch_line(req.query.q)
         var results = await search.searchMany(naptanCSV, query)
     
         results = results.map(result => {

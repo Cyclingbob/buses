@@ -8,21 +8,25 @@ async function readXML(xmlFile){
     if(!xml.TransXChange) throw new Error("No TransXChange property in XML file: Bad XML timetable file provided: " + file)
     xml = xml.TransXChange
 
-    let servicedOrganisations = xml.ServicedOrganisations.map(org => {
-        org = org.ServicedOrganisation[0]
-        
-        return {
-            code: org.OrganisationCode[0],
-            name: org.Name[0],
-            workingDays: org.WorkingDays[0].DateRange.map(range => {
-                return {
-                    startDate: range.StartDate[0],
-                    endDate: range.EndDate[0],
-                    description: range.Description[0]
-                }
-            })
-        }
-    })
+    let servicedOrganisations
+    if(xml.ServicedOrganisations){
+        servicedOrganisations = xml.ServicedOrganisations.map(org => {
+            org = org.ServicedOrganisation[0]
+            
+            return {
+                code: org.OrganisationCode[0],
+                name: org.Name[0],
+                workingDays: org.WorkingDays[0].DateRange.map(range => {
+                    return {
+                        startDate: range.StartDate[0],
+                        endDate: range.EndDate[0],
+                        description: range.Description[0]
+                    }
+                })
+            }
+        })
+    } else servicedOrganisations = []
+    
 
     let stopPoints = xml.StopPoints[0].AnnotatedStopPointRef.map(stop => {
         return {
@@ -144,10 +148,10 @@ async function readXML(xmlFile){
             standard_service: {
                 origin: service.StandardService[0].Origin[0],
                 destination: service.StandardService[0].Destination[0],
-                vias: service.StandardService[0].Vias.map(via => {
+                vias: service.StandardService[0].Vias ? service.StandardService[0].Vias.map(via => {
                     return via.Via[0]
-                }),
-                use_all_stop_points: service.StandardService[0].UseAllStopPoints[0],
+                }) : [],
+                use_all_stop_points: service.StandardService[0].UseAllStopPoints ? service.StandardService[0].UseAllStopPoints[0] : null,
                 journey_pattern: service.StandardService[0].JourneyPattern.map(pattern => {
                     return {
                         id: pattern["$"].id,
@@ -224,7 +228,7 @@ async function readXML(xmlFile){
                     block_number: journey.Operational[0].Block[0].BlockNumber[0]
                 },
                 ticket_machine: {
-                    tm_service_code: journey.Operational[0].TicketMachine[0].TicketMachineServiceCode[0],
+                    tm_service_code: journey.Operational[0].TicketMachine[0].TicketMachineServiceCode ? journey.Operational[0].TicketMachine[0].TicketMachineServiceCode[0] : null,
                     service_code: journey.Operational[0].TicketMachine[0].JourneyCode[0]
                 },
             },
