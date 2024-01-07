@@ -15,7 +15,7 @@ app.set('view-engine', 'ejs')
 
 var cache = {
     stops: {},
-    lines: {}
+    lines: []
 }
 
 function fromArrow(heading){
@@ -144,17 +144,44 @@ function getLines(dir){
     let lines = []
     let files = fs.readdirSync(dir)
     for(file of files){
-        let content = parseTimetable(path.join(dir, file))
+        // let content = parseTimetable(path.join(dir, file))
+        let content = JSON.parse(fs.readFileSync(path.join(dir, file)))
         lines.push(content)
     }
     return lines
 }
 
-var lines = getLines(timetable_dir)
-lines = lines.map(parseTimetable)
+var timetableContents = getLines(timetable_dir)
+
+for(timetable of timetableContents){
+    for(service of timetable.services){
+        for(line of service.lines){
+            cache.lines.append({
+                name: line.line_name,
+                description: line.inbound_description.description,
+                id: line.id,
+                vias: line.vias
+            })
+        }
+    }
+}
+
+function searchServices(string){
+    var split_query = string.split(' ')
+    var results = []
+
+    for(line of cache.lines){
+        if(split_query.every(part => ))
+    }
+
+    if(split_query.every(part => item.toLowerCase().includes(part.toLowerCase()))){ //if we find any of the keywords then push it to found list
+        if(!item.endsWith("inactive")) found.push(item)
+    }
+}
+
 cache.lines = lines
 
-function fetch_line(string){
+function fetch_line_title(string){
     var split_query = string.split(' ')
     var found = []
     for(line of cache.lines){
