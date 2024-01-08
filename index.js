@@ -156,11 +156,11 @@ var timetableContents = getLines(timetable_dir)
 for(timetable of timetableContents){
     for(service of timetable.services){
         for(line of service.lines){
-            cache.lines.append({
+            cache.lines.push({
                 name: line.line_name,
                 description: line.inbound_description.description,
                 id: line.id,
-                vias: line.vias
+                vias: [... new Set([...line.inbound_description.vias, ...line.outbound_description.vias])]
             })
         }
     }
@@ -171,15 +171,30 @@ function searchServices(string){
     var results = []
 
     for(line of cache.lines){
-        if(split_query.every(part => ))
+        console.log(line)
+        if(split_query.every(part => line.name.toLowerCase().includes(part.toLowerCase()))){
+            results.push(line)
+            continue;
+        }
+        if(split_query.every(part => line.description.toLowerCase().includes(part.toLowerCase()))){
+            results.push(line)
+            continue;
+        }
+        if(split_query.every(part => line.id.toLowerCase().includes(part.toLowerCase()))){
+            results.push(line)
+            continue;
+        }
+        // split_query.forEach(part => {
+        //     if(line.vias.find(a => a.toLowerCase === part))
+        // })
     }
 
-    if(split_query.every(part => item.toLowerCase().includes(part.toLowerCase()))){ //if we find any of the keywords then push it to found list
-        if(!item.endsWith("inactive")) found.push(item)
-    }
+    // if(split_query.every(part => item.toLowerCase().includes(part.toLowerCase()))){ //if we find any of the keywords then push it to found list
+    //     if(!item.endsWith("inactive")) found.push(item)
+    // }
 }
 
-cache.lines = lines
+searchServices("basildon")
 
 function fetch_line_title(string){
     var split_query = string.split(' ')
